@@ -80,15 +80,15 @@ class CommentType:
 
 # dictionary with every type of comment
 comment_types = [
-    # CommentType("html",
-                # re.compile(r'(<!--)'),
-                # re.compile(r'(-->)')),
+    CommentType("html",
+                re.compile(r'(<!--)'),
+                re.compile(r'(-->)')),
     CommentType("css/js",
                 re.compile(r'(/\*)'),
                 re.compile(r'(\*/)')),
-    # CommentType("js",
-                # re.compile(r'(//)'),
-                # None)
+    CommentType("js",
+                re.compile(r'(//)'),
+                None)
 ]
 
 directory = input("path to directory: ")

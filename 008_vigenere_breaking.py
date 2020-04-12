@@ -66,12 +66,21 @@ char_list = [
     'Y',
     'Z'
 ]
+unknown_char = "_"
+if unknown_char in char_list:
+    raise ValueError("the hard coded unknown char is not allowed to be in the character list!")
 
-cipher = input("paste cipher here: ").upper()
-text_partly = input("paste known parts of the text here (unknown parts should be marked with ' '): ").upper()
-# length has to match with the length of the cipher
-if len(cipher) != len(text_partly):
-    raise ValueError("The length of the text has to match the length of the cipher!")
+
+# get cipher from file if unavailable
+cipher = input("paste the cipher here: ").upper()
+if cipher == '':
+    file_location = input("file location: ")
+    with open(file_location, encoding='utf-8') as file:
+        cipher = file.read().upper()
+
+
+text_partly = input("paste known parts of the text here (unknown parts should be marked with '{}'): "
+                    .format(unknown_char)).upper()
 
 # get list with indices of every character from the cipher not in char_list (=gaps in cipher)
 unknown_chars = []
@@ -79,60 +88,83 @@ for idx, char in enumerate(cipher):
     if char not in char_list:
         unknown_chars.append(idx)
 
-# generate key_partly_list <- see which key could have created the cipher out of the text
-key_partly_list = []
-for idx, char in enumerate(text_partly):
-    if char in char_list:
-        key_char_idx = char_list.index(cipher[idx]) - char_list.index(char)
-        key_partly_list.append(char_list[key_char_idx])
-    # every unknown char in key_partly is either legit when aligned with the same char in the cipher
-    # or an unknown part of the key
-    # when the character is only a gap <- current index is in unknown_chars
-    elif idx not in unknown_chars:
-        # add unknown character to list
-        key_partly_list.append(char)
 
-# trying to find a repeating string in key_partly
-# starting with length 1, going up to the length of the key
-# list with every repeating string
+# going threw every possible position of the known part in the cipher and get every possible key (already extended)
 strings_list = []
-# going threw every possible length of the substring
-for len_rep_str in range(1, len(key_partly_list) + 1):
-    # going threw every complete string (no unknown characters) inside key_partly with
-    for idx in range(0, len(key_partly_list), len_rep_str):
-        # when the index would be out of range
-        # when the current index plus the "shift" is at least the length of key_partly_list
-        if idx + len_rep_str > len(key_partly_list):
-            break
+for shift in range(0, len(cipher) - len(text_partly) + 1):
+    # shift known part
+    text_partly_shifted = unknown_char * shift
+    # add known part to text_partly_shifted
+    text_partly_shifted += text_partly
+    # add characters to end so that len(cipher) == len(text_partly_shifted)
+    text_partly_shifted += unknown_char * (len(cipher) - len(text_partly_shifted))
 
-        # cut string out of the key
-        rep_str = key_partly_list[idx:idx + len_rep_str]
+    # generate key_partly_list <- see which key could have created the cipher out of the text (decrypting)
+    key_partly_list = []
+    # also terminate if the known part does not align with the cipher (gaps aligning)
+    usable = True
+    for idx, char in enumerate(text_partly_shifted):
+        if char in char_list:
+            # when there is a known character in the known text that is aligned with a gap
+            if cipher[idx] not in char_list:
+                usable = False
+                break
+            # decrypt
+            key_char_idx = char_list.index(cipher[idx]) - char_list.index(char)
+            key_partly_list.append(char_list[key_char_idx])
+        # every unknown char in key_partly is either legit when aligned with the same char in the cipher
+        # or an unknown part of the key
+        # when the character is only a gap <- current index is in unknown_chars
+        elif idx not in unknown_chars:
+            # add unknown character to list
+            key_partly_list.append(char)
+    # get new key if this one is unusable
+    if not usable:
+        continue
 
-        # build list out of string
-        rep_str_list = []
-        # True when at least one known character found
-        usable = False
-        for rep_str_char in rep_str:
-            # convert any unknown characters into ' '
-            if rep_str_char in char_list:
-                rep_str_list.append(rep_str_char)
-                usable = True
-            else:
-                rep_str_list.append(' ')
+    # trying to find a repeating string in key_partly
+    # starting with length 1, going up to the length of the key
+    # list with every repeating string
+    strings_list_this = []
+    # going threw every possible length of the substring
+    for len_rep_str in range(1, len(key_partly_list) + 1):
+        # going threw every complete string (no unknown characters) inside key_partly with
+        for idx in range(0, len(key_partly_list), len_rep_str):
+            # when the index would be out of range
+            # when the current index plus the "shift" is at least the length of key_partly_list
+            if idx + len_rep_str > len(key_partly_list):
+                break
 
-        # only proceed when the string is usable <- there are known characters in the string
-        if usable:
-            # check if string can build key that matches with key_partly
-            if check_str(rep_str_list, key_partly_list):
-                rep_str = ''.join(rep_str_list)
-                # only add a string that doesn't exit in the list yet
-                if rep_str not in strings_list:
-                    strings_list.append(rep_str)
+            # cut string out of the key
+            rep_str = key_partly_list[idx:idx + len_rep_str]
 
-# sort list by length, the shorter the better
-strings_list.sort(key=lambda string: len(string))
+            # build list out of string
+            rep_str_list = []
+            # True when at least one known character found
+            usable = False
+            for rep_str_char in rep_str:
+                # convert any unknown characters into ' '
+                if rep_str_char in char_list:
+                    rep_str_list.append(rep_str_char)
+                    usable = True
+                else:
+                    rep_str_list.append(' ')
+
+            # only proceed when the string is usable <- there are known characters in the string
+            if usable:
+                # check if string can build key that matches with key_partly
+                if check_str(rep_str_list, key_partly_list):
+                    rep_str = ''.join(rep_str_list)
+                    # only add a string that doesn't exit in the list yet
+                    if rep_str not in strings_list_this:
+                        strings_list_this.append(rep_str)
+    # add found keys to others
+    strings_list += strings_list_this
+
 # sort list by amount of unknown characters, the fewer the better
-strings_list.sort(key=blanks_amount)
+strings_list.sort(key=blanks_amount, reverse=True)
+# sort list by length, the shorter the better
+strings_list.sort(key=lambda string: len(string), reverse=True)
 
 # delete doubles in list ("KEY" and "KEYKEY" are doubles)
 keys_list = []
