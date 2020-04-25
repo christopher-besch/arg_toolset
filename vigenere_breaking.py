@@ -9,34 +9,7 @@ from vigenere import vigenere_crypt
 def blanks_amount(phrase, char_list=None):
     # replace char_list with default
     if char_list is None:
-        char_list = [
-            'A',
-            'B',
-            'C',
-            'D',
-            'E',
-            'F',
-            'G',
-            'H',
-            'I',
-            'J',
-            'K',
-            'L',
-            'M',
-            'N',
-            'O',
-            'P',
-            'Q',
-            'R',
-            'S',
-            'T',
-            'U',
-            'V',
-            'W',
-            'X',
-            'Y',
-            'Z'
-        ]
+        char_list = char_list_default
     # a blank is an unknown character
     blanks = 0
     for character in phrase:
@@ -49,34 +22,7 @@ def blanks_amount(phrase, char_list=None):
 def check_str(string, key, char_list=None):
     # replace char_list with default
     if char_list is None:
-        char_list = [
-            'A',
-            'B',
-            'C',
-            'D',
-            'E',
-            'F',
-            'G',
-            'H',
-            'I',
-            'J',
-            'K',
-            'L',
-            'M',
-            'N',
-            'O',
-            'P',
-            'Q',
-            'R',
-            'S',
-            'T',
-            'U',
-            'V',
-            'W',
-            'X',
-            'Y',
-            'Z'
-        ]
+        char_list = char_list_default
     # True until an unfitting character is found
     match = True
     # going through every character in the key
@@ -111,34 +57,7 @@ def check_str(string, key, char_list=None):
 def get_key_options(cipher, text_partly, char_list=None, unknown_char="_"):
     # replace char_list with default
     if char_list is None:
-        char_list = [
-            'A',
-            'B',
-            'C',
-            'D',
-            'E',
-            'F',
-            'G',
-            'H',
-            'I',
-            'J',
-            'K',
-            'L',
-            'M',
-            'N',
-            'O',
-            'P',
-            'Q',
-            'R',
-            'S',
-            'T',
-            'U',
-            'V',
-            'W',
-            'X',
-            'Y',
-            'Z'
-        ]
+        char_list = char_list_default
     if unknown_char in char_list:
         raise ValueError("the unknown char is not allowed to be in the character list!")
 
@@ -255,6 +174,36 @@ def get_key_options(cipher, text_partly, char_list=None, unknown_char="_"):
         if usable:
             keys_list.append(key)
     return keys_list
+
+
+char_list_default = [
+            'A',
+            'B',
+            'C',
+            'D',
+            'E',
+            'F',
+            'G',
+            'H',
+            'I',
+            'J',
+            'K',
+            'L',
+            'M',
+            'N',
+            'O',
+            'P',
+            'Q',
+            'R',
+            'S',
+            'T',
+            'U',
+            'V',
+            'W',
+            'X',
+            'Y',
+            'Z'
+        ]
 
 
 # get length of line over repeating part of the key
