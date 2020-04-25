@@ -1,7 +1,7 @@
-## arg_toolset
+# arg_toolset
 a simple toolkit helping you solving ARGs
 
-# Tools
+## Tools
 
 | tools               | description                                                                      |
 |:------------------- |:-------------------------------------------------------------------------------- |
