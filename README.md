@@ -1,5 +1,5 @@
 # arg_toolset
-a simple toolkit helping you solving ARGs
+a simple toolkit helping you solve ARGs
 
 ## Tools
 
