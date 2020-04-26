@@ -153,7 +153,7 @@ if __name__ == "__main__":
         for type_ in types:
             # only print the name if there is stuff inside
             if len(types[type_].keys()) > 0:
-                print(type_)
+                # print(type_)
 
                 for line_num in types[type_]:
                     print("{}\t\t{}".format(line_num, "\n\t\t\t".join(types[type_][line_num])))
