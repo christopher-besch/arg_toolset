@@ -210,34 +210,7 @@ char_list_default = [
 def get_len_line(text, repeating_key, char_list=None):
     # replace char_list with default
     if char_list is None:
-        char_list = [
-            'A',
-            'B',
-            'C',
-            'D',
-            'E',
-            'F',
-            'G',
-            'H',
-            'I',
-            'J',
-            'K',
-            'L',
-            'M',
-            'N',
-            'O',
-            'P',
-            'Q',
-            'R',
-            'S',
-            'T',
-            'U',
-            'V',
-            'W',
-            'X',
-            'Y',
-            'Z'
-        ]
+        char_list = char_list_default
     len_line = 0
     str_idx = 0
     for char in text:
