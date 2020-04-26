@@ -141,11 +141,8 @@ def get_key_options(cipher, text_partly, char_list=None, unknown_char="_"):
         # add found keys to others
         strings_list += strings_list_this
 
-    # sort list by amount of unknown characters, the fewer the better
-    strings_list.sort(key=lambda string: blanks_amount(string, char_list=char_list), reverse=True)
-    # sort list by length, the shorter the better
-    strings_list.sort(key=lambda string: len(string), reverse=True)
-
+    # sort list by length, the longer the better
+    strings_list.sort(key=lambda string: len(string))
     # delete doubles in list (e.g. "KEY" and "KEYKEY" are doubles)
     keys_list = []
     for key in strings_list:
@@ -173,7 +170,34 @@ def get_key_options(cipher, text_partly, char_list=None, unknown_char="_"):
         # when no test could prove that this key is just a copy
         if usable:
             keys_list.append(key)
+
+    # sort list by amount of unknown characters, the fewer the better
+    keys_list.sort(key=lambda string: blanks_amount(string, char_list=char_list), reverse=True)
+    # sort list by length, the shorter the better
+    keys_list.sort(key=lambda string: len(string), reverse=True)
+
     return keys_list
+
+
+# get length of line over repeating part of the key
+def get_len_line(text, repeating_key, char_list=None):
+    # replace char_list with default
+    if char_list is None:
+        char_list = char_list_default
+    len_line = 0
+    str_idx = 0
+    for char in text:
+        # when the length of the key has been reached, the loop is over
+        if str_idx >= len(repeating_key):
+            break
+        # when this character in the text is known, it will be underlined at the cost of one index
+        if char in char_list:
+            len_line += 1
+            str_idx += 1
+        # when this is an unknown character, it will be underlined "for free"
+        else:
+            len_line += 1
+    return len_line
 
 
 char_list_default = [
@@ -204,28 +228,6 @@ char_list_default = [
             'Y',
             'Z'
         ]
-
-
-# get length of line over repeating part of the key
-def get_len_line(text, repeating_key, char_list=None):
-    # replace char_list with default
-    if char_list is None:
-        char_list = char_list_default
-    len_line = 0
-    str_idx = 0
-    for char in text:
-        # when the length of the key has been reached, the loop is over
-        if str_idx >= len(repeating_key):
-            break
-        # when this character in the text is known, it will be underlined at the cost of one index
-        if char in char_list:
-            len_line += 1
-            str_idx += 1
-        # when this is an unknown character, it will be underlined "for free"
-        else:
-            len_line += 1
-    return len_line
-
 
 if __name__ == "__main__":
     # get cipher from file if unavailable

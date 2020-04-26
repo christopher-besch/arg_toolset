@@ -36,13 +36,6 @@ def vigenere_crypt(text, key, encrypt=True, char_list=None):
             'Z'
         ]
 
-    # remove every unknown character in the key
-    key_list = []
-    for char in key:
-        if char in char_list:
-            key_list.append(char)
-    key = ''.join(key_list)
-
     # going through every character in the text
     copied_key = ""
     cipher = ""
@@ -57,7 +50,13 @@ def vigenere_crypt(text, key, encrypt=True, char_list=None):
             key_char_idx -= len(key)
         key_char = key[key_char_idx]
 
-        if char in char_list:
+        # when the key is unknown at this position
+        if key_char not in char_list:
+            # add characters
+            copied_key += key_char
+            cipher += key_char
+
+        elif char in char_list:
             # adding when encrypting
             if encrypt:
                 cipher_char_idx = char_list.index(char) + char_list.index(key_char)
