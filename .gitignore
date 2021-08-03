@@ -1,0 +1,8 @@
+__pycache__/*
+
+# PyCharm files
+idea/*
+
+corncob_lowercase.txt
+cipher.txt
+vigenere_breaking_old.py
